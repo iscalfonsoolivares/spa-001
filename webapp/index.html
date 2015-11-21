@@ -1,18 +1,15 @@
-<html ng-app="helloApp">
+<html ng-app="app">
 <head>
   <title>HelloWorld</title>
   <link rel="stylesheet" href="assets/libs/bootstrap/dist/css/bootstrap.min.css">
   <script src="assets/libs/angular/angular.min.js"></script>
+  <script src="assets/libs/angular-route/angular-route.min.js"></script>
   <script src="assets/libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-  <script>
-    var helloApp = angular.module( "helloApp", ['ui.bootstrap'] );
-    helloApp.controller( "HelloCtrl", [ '$scope', function($scope) {
-      $scope.name = "calvin hobbes";
-    }]);
-  </script>
+  <script src="assets/dev/js/pub/app.module.js"></script>
+  <script src="assets/dev/js/pub/hello/hello.js"></script>
 </head>
  
-<body ng-controller="HelloCtrl">
+<body ng-controller="HelloController">
   <div class="page-header">
     <h1>Hello World Sample Program</h1>
   </div>
