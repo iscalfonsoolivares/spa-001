@@ -1,0 +1,31 @@
+<html ng-app="helloApp">
+<head>
+  <title>HelloWorld</title>
+  <link rel="stylesheet" href="assets/libs/bootstrap/dist/css/bootstrap.min.css">
+  <script src="assets/libs/angular/angular.min.js"></script>
+  <script src="assets/libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+  <script>
+    var helloApp = angular.module( "helloApp", ['ui.bootstrap'] );
+    helloApp.controller( "HelloCtrl", [ '$scope', function($scope) {
+      $scope.name = "calvin hobbes";
+    }]);
+  </script>
+</head>
+ 
+<body ng-controller="HelloCtrl">
+  <div class="page-header">
+    <h1>Hello World Sample Program</h1>
+  </div>
+  <div>
+    <form class="form-horizontal" role="form">
+      <div class="form-group">
+          <label class="col-md-2 control-label">Type Your Name</label>
+          <div class="col-md-4">
+               <input type="text" ng-model="name"  class="form-control" value="{{name}}"/>
+               <span>Hello {{ name }}!</span>
+          </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
