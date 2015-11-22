@@ -9,7 +9,6 @@
   HelloController.$inject = ['$scope'];
 
   function HelloController($scope) {
-    var vm = this;
     $scope.name = "calvin hobbes";
   }
   
