@@ -5,24 +5,16 @@
   <script src="assets/libs/angular/angular.min.js"></script>
   <script src="assets/libs/angular-route/angular-route.min.js"></script>
   <script src="assets/libs/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-  <script src="assets/dev/js/pub/hello/hello.controller.js"></script>
-  <script src="assets/dev/js/pub/app.module.js"></script>
+  <script src="assets/dev/js/app/pub/app.module.js"></script>
+  <script src="assets/dev/js/app/pub/hello/hello.controller.js"></script>
 </head>
  
-<body ng-controller="HelloController">
-  <div class="page-header">
-    <h1>Hello World Sample Program</h1>
-  </div>
-  <div>
-    <form class="form-horizontal" role="form">
-      <div class="form-group">
-          <label class="col-md-2 control-label">Type Your Name</label>
-          <div class="col-md-4">
-               <input type="text" ng-model="name"  class="form-control" value="{{name}}"/>
-               <span>Hello {{ name }}!</span>
-          </div>
-      </div>
-    </form>
-  </div>
+<body>
+  
+  
+  <!-- angular templating -->
+  <!-- this is where content will be injected -->
+  <div ng-view></div>
+  
 </body>
 </html>

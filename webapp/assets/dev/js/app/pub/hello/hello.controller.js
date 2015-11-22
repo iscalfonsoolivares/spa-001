@@ -6,10 +6,9 @@
       .module('app')
       .controller('HelloController', HelloController);
   
-  HelloController.$inject = ['$scope','$location'];
+  HelloController.$inject = ['$scope'];
 
-  function HelloController($scope, $location) {
-    var vm = this;
+  function HelloController($scope) {
     $scope.name = "calvin hobbes";
   }
   
