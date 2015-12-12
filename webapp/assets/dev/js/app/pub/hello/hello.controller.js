@@ -3,13 +3,13 @@
   'use strict';
 
   angular
-      .module('app')
+      .module('hello')
       .controller('HelloController', HelloController);
-  
-  HelloController.$inject = ['$scope'];
 
-  function HelloController($scope) {
-    $scope.name = "calvin hobbes";
+  function HelloController() {
+    var vm = this;
+    vm.name = "calvin hobbes";
+    vm.address = "unknown";
   }
   
 })();    
