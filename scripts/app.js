@@ -35,9 +35,9 @@
         });
   }
   
-  run.$inject = ['$rootScope', '$route', '$location'];
+  run.$inject = ['$rootScope', '$location'];
 
-  function run($rootScope, $route, $location){
+  function run($rootScope, $location){
 
     var SERVER_QA_NAME = "qa.jipow.com";
     var SERVER_PROD_NAME = "jipow.com";
