@@ -1,4 +1,4 @@
 node_modules
-webapp/assets/libs
-webapp/assets/dist
+public/assets/libs
+public/assets/dist
 .DS_Store
