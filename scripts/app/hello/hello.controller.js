@@ -10,7 +10,7 @@
 
   function HelloController(HelloService) {
     var vm = this;
-    vm.name = "calvin hobbes";
+    vm.name = "calvin hobbes rules";
     vm.address = "unknown";
     
     activate();
