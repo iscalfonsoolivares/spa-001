@@ -14,20 +14,6 @@ var sourcemaps    = require('gulp-sourcemaps');
 var connect       = require('gulp-connect');
 var openPage      = require("gulp-open");
 
-var getVersion = function () {
-    return fs.readFileSync('Version');
-};
- 
-var getCopyrightVersion = function () {
-    return fs.readFileSync('Copyright');
-};
-
-gulp.task("html", function() {
-  var stream = gulp.src('public/*.html') 
-  .pipe(connect.reload()); 
-  return stream;
-});
-
 gulp.task('jslint', function () {
     gulp.src('scripts/**/*.js')
     .pipe(jshint())
@@ -40,48 +26,62 @@ gulp.task('jscs', function() {
         .pipe(jscs.reporter());
 });
 
-gulp.task('minify-js', function (){
-    gulp.src('scripts/**/*.js')
+gulp.task("html", function() {
+  var stream = gulp.src('public/*.html') 
+  .pipe(connect.reload()); 
+  return stream;
+});
+
+var getVersion = function () {
+    return fs.readFileSync('Version');
+};
+ 
+var getCopyrightVersion = function () {
+    return fs.readFileSync('Copyright');
+};
+
+gulp.task('minify-js', ['minify-templates','copy-json'], function (){
+  var stream = gulp.src('scripts/**/*.js')
     .pipe(ngAnnotate())
     .pipe(uglify())
     .pipe(concat('app.js'))
     .pipe(header(getCopyrightVersion(), {version: getVersion()}))
-    .pipe(gulp.dest('public/assets/js/'));	
+    .pipe(gulp.dest('public/assets/js/'))
+    .pipe(connect.reload());
+  return stream;
 });
 
-gulp.task('minify-html', function () {
-    gulp.src('scripts/**/*.html')
+gulp.task('minify-templates', function () {
+  var stream = gulp.src('scripts/**/*.html')
     .pipe(minifyHtml())
-    .pipe(gulp.dest('public/assets/js/'));
+    .pipe(gulp.dest('public/assets/js/'))    
+  return stream;  
 });
 
 gulp.task('copy-json', function() {
-   gulp.src('scripts/**/*.json')
-   .pipe(gulp.dest('public/assets/js/'));
+  var stream = gulp.src('scripts/**/*.json')
+   .pipe(gulp.dest('public/assets/js/'))
+  return stream;
 });
 
 gulp.task('compile-sass', function () {
-    gulp.src('styles/**/*.scss')
+  var stream = gulp.src('styles/**/*.scss')
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer()) 
     .pipe(minifyCSS({ noAdvanced: true }))    
     .pipe(sourcemaps.write())    
-    .pipe(gulp.dest('public/assets/css/'));
-});
-
-gulp.task('watchjs', function () {
-    gulp.watch(['scripts/**/*.js'], ['minify-js']);
-});
-
-gulp.task('watchcss', function () {
-    gulp.watch(['styles/**/*.scss'], ['compile-sass']);
+    .pipe(gulp.dest('public/assets/css/'))
+    .pipe(connect.reload());
+  return stream;  
 });
 
 gulp.task('watch', function() { 
-    //gulp.watch('resources/scss/**/*.scss', ['compile-sass']);
-    //gulp.watch('scripts/**/*.js', ['minify-js']);
+    gulp.watch('styles/**/*.scss', ['compile-sass']);
+    gulp.watch('scripts/**/*.js', ['minify-js']);
     //gulp.watch('resources/images/**/*.{jpg,png,gif}');
+    gulp.watch('scripts/**/*.html', ['minify-templates']);
+    gulp.watch('scripts/**/*.json', ['copy-json']);
     gulp.watch('public/index.html', ['html']); 
 });
 
@@ -99,7 +99,7 @@ gulp.task('connect', function() {
   });
 });
 
-gulp.task('default', ['watch','connect'], function() {
+gulp.task('develop', ['minify-js', 'compile-sass', 'watch', 'connect'], function() {
   //Now open in browser 
   var stream = gulp.src("") 
   .pipe(openPage({ 

@@ -60,6 +60,7 @@
       case SERVER_QA_NAME:
       case SERVER_PROD_NAME:
           ga('send', 'pageview', $location.url());
+          
         break;
       }
 
