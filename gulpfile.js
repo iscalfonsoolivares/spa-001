@@ -13,6 +13,7 @@ var jscs          = require('gulp-jscs');
 var sourcemaps    = require('gulp-sourcemaps');
 var connect       = require('gulp-connect');
 var openPage      = require("gulp-open");
+var Server        = require('karma').Server;
 
 gulp.task('jslint', function () {
     gulp.src('scripts/**/*.js')
@@ -82,13 +83,7 @@ gulp.task('watch', function() {
     //gulp.watch('resources/images/**/*.{jpg,png,gif}');
     gulp.watch('scripts/**/*.html', ['minify-templates']);
     gulp.watch('scripts/**/*.json', ['copy-json']);
-    gulp.watch('public/index.html', ['html']); 
-});
-
-// Deprecated :
-gulp.task('copy-templates', function() {
-   gulp.src('scripts/**/*.{html,json}')
-   .pipe(gulp.dest('public/assets/js/'));
+    gulp.watch('public/*.html', ['html']); 
 });
 
 gulp.task('connect', function() { 
@@ -107,4 +102,10 @@ gulp.task('develop', ['minify-js', 'compile-sass', 'watch', 'connect'], function
     uri: "http://localhost:8000"
   })); 
   return stream; 
+});
+
+gulp.task('unit-testing', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js'
+  }, done).start();
 });
