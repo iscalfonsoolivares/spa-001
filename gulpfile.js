@@ -1,19 +1,31 @@
-var gulp          = require("gulp");
-var fs            = require('fs');
-var uglify        = require("gulp-uglify");
-var sass          = require("gulp-sass");
-var autoprefixer  = require('gulp-autoprefixer'); 
-var minifyCSS     = require('gulp-minify-css');
-var concat        = require('gulp-concat');
-var ngAnnotate    = require('gulp-ng-annotate');
-var jshint        = require("gulp-jshint");
-var minifyHtml    = require("gulp-minify-html");
-var header        = require("gulp-header");
-var jscs          = require('gulp-jscs');
-var sourcemaps    = require('gulp-sourcemaps');
-var connect       = require('gulp-connect');
-var openPage      = require("gulp-open");
-var Server        = require('karma').Server;
+var gulp              = require("gulp");
+var fs                = require('fs');
+var uglify            = require("gulp-uglify");
+var sass              = require("gulp-sass");
+var autoprefixer      = require('gulp-autoprefixer'); 
+var minifyCSS         = require('gulp-minify-css');
+var concat            = require('gulp-concat');
+var ngAnnotate        = require('gulp-ng-annotate');
+var jshint            = require("gulp-jshint");
+var minifyHtml        = require("gulp-minify-html");
+var header            = require("gulp-header");
+var jscs              = require('gulp-jscs');
+var sourcemaps        = require('gulp-sourcemaps');
+var connect           = require('gulp-connect');
+var openPage          = require("gulp-open");
+var Server            = require('karma').Server;
+var protractor        = require("gulp-protractor").protractor;
+var webdriver_update  = require('gulp-protractor').webdriver_update;
+
+gulp.task('webdriver_update', webdriver_update);
+
+gulp.task('protractor', ['webdriver_update'],function () {
+    gulp.src(["example_spec.js"])
+    .pipe(protractor({
+        configFile: "protractor.conf.js"
+    }))
+    .on('error', function(e) { throw e })
+});
 
 gulp.task('jslint', function () {
     gulp.src('scripts/**/*.js')
