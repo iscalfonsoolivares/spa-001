@@ -1,5 +1,9 @@
-var gulp              = require("gulp");
+
+var env               = process.env.NODE_ENV || 'development';
+
 var fs                = require('fs');
+var Server            = require('karma').Server;
+var gulp              = require("gulp");
 var uglify            = require("gulp-uglify");
 var sass              = require("gulp-sass");
 var autoprefixer      = require('gulp-autoprefixer'); 
@@ -13,31 +17,14 @@ var jscs              = require('gulp-jscs');
 var sourcemaps        = require('gulp-sourcemaps');
 var connect           = require('gulp-connect');
 var openPage          = require("gulp-open");
-var Server            = require('karma').Server;
 var protractor        = require("gulp-protractor").protractor;
 var webdriver_update  = require('gulp-protractor').webdriver_update;
 
-gulp.task('webdriver_update', webdriver_update);
-
-gulp.task('protractor', ['webdriver_update'],function () {
-    gulp.src(["example_spec.js"])
-    .pipe(protractor({
-        configFile: "protractor.conf.js"
-    }))
-    .on('error', function(e) { throw e })
-});
-
-gulp.task('jslint', function () {
-    gulp.src('scripts/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter());
-});
-
-gulp.task('jscs', function() {
-    return gulp.src('scripts/**/*.js')
-        .pipe(jscs())
-        .pipe(jscs.reporter());
-});
+/**
+ * 
+ * Development flow
+ * 
+ */
 
 gulp.task("html", function() {
   var stream = gulp.src('public/*.html') 
@@ -45,16 +32,8 @@ gulp.task("html", function() {
   return stream;
 });
 
-var getVersion = function () {
-    return fs.readFileSync('Version');
-};
- 
-var getCopyrightVersion = function () {
-    return fs.readFileSync('Copyright');
-};
-
 gulp.task('minify-js', ['minify-templates','copy-json'], function (){
-  var stream = gulp.src('scripts/**/*.js')
+  var stream = gulp.src('scripts/**/*{.controller.js,.directive.js,.service.js,app.js}')
     .pipe(ngAnnotate())
     .pipe(uglify())
     .pipe(concat('app.js'))
@@ -116,8 +95,60 @@ gulp.task('develop', ['minify-js', 'compile-sass', 'watch', 'connect'], function
   return stream; 
 });
 
+/**
+ * 
+ * QA related tasks
+ * 
+ */
+
+gulp.task('jslint', function () {
+    gulp.src('scripts/**/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter());
+});
+
+gulp.task('jscs', function() {
+    return gulp.src('scripts/**/*.js')
+        .pipe(jscs())
+        .pipe(jscs.reporter());
+});
+
 gulp.task('unit-testing', function (done) {
   new Server({
     configFile: __dirname + '/karma.conf.js'
   }, done).start();
 });
+
+gulp.task('webdriver_update', webdriver_update);
+
+gulp.task('protractor', ['webdriver_update'],function () {
+    gulp.src(["example_spec.js"])
+    .pipe(protractor({
+        configFile: "protractor.conf.js"
+    }))
+    .on('error', function(e) { throw e })
+});
+
+/**
+ * 
+ * Default task
+ * 
+ */
+
+gulp.task('default', function() {
+  console.log('this is for .. ' + env);
+});
+
+/**
+ * 
+ * Auxiliary functions
+ * 
+ */
+
+function getVersion() {
+    return fs.readFileSync('Version');
+};
+ 
+function getCopyrightVersion() {
+    return fs.readFileSync('Copyright');
+};
