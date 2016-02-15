@@ -1,5 +1,5 @@
 /*
-SPA-001 Ver. 0.0.6
+SPA-001 Ver. 0.0.7
 Angular front end template
 
 Full source at https://github.com/iscalfonsoolivares/spa-001
