@@ -1,72 +1,37 @@
-var gulp              = require("gulp");
+
+var env               = process.env.NODE_ENV || 'development';
+
 var fs                = require('fs');
-var uglify            = require("gulp-uglify");
-var sass              = require("gulp-sass");
-var autoprefixer      = require('gulp-autoprefixer'); 
-var minifyCSS         = require('gulp-minify-css');
-var concat            = require('gulp-concat');
-var ngAnnotate        = require('gulp-ng-annotate');
-var jshint            = require("gulp-jshint");
-var minifyHtml        = require("gulp-minify-html");
-var header            = require("gulp-header");
-var jscs              = require('gulp-jscs');
-var sourcemaps        = require('gulp-sourcemaps');
-var connect           = require('gulp-connect');
-var openPage          = require("gulp-open");
 var Server            = require('karma').Server;
-var protractor        = require("gulp-protractor").protractor;
-var webdriver_update  = require('gulp-protractor').webdriver_update;
+var gulp              = require("gulp");
+var plugins           = require('gulp-load-plugins')({camelize: true});
 
-gulp.task('webdriver_update', webdriver_update);
-
-gulp.task('protractor', ['webdriver_update'],function () {
-    gulp.src(["example_spec.js"])
-    .pipe(protractor({
-        configFile: "protractor.conf.js"
-    }))
-    .on('error', function(e) { throw e })
-});
-
-gulp.task('jslint', function () {
-    gulp.src('scripts/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter());
-});
-
-gulp.task('jscs', function() {
-    return gulp.src('scripts/**/*.js')
-        .pipe(jscs())
-        .pipe(jscs.reporter());
-});
+/**
+ * 
+ * Development flow
+ * 
+ */
 
 gulp.task("html", function() {
-  var stream = gulp.src('public/*.html') 
-  .pipe(connect.reload()); 
+  var stream = gulp.src('public/*.html')
+  .pipe(plugins.connect.reload()); 
   return stream;
 });
 
-var getVersion = function () {
-    return fs.readFileSync('Version');
-};
- 
-var getCopyrightVersion = function () {
-    return fs.readFileSync('Copyright');
-};
-
 gulp.task('minify-js', ['minify-templates','copy-json'], function (){
-  var stream = gulp.src('scripts/**/*.js')
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(concat('app.js'))
-    .pipe(header(getCopyrightVersion(), {version: getVersion()}))
+  var stream = gulp.src('scripts/**/*{.controller.js,.directive.js,.service.js,app.js}')
+    .pipe(plugins.ngAnnotate())
+    .pipe(plugins.uglify())
+    .pipe(plugins.concat('app.js'))
+    .pipe(plugins.header(getCopyrightVersion(), {version: getVersion()}))
     .pipe(gulp.dest('public/assets/js/'))
-    .pipe(connect.reload());
+    .pipe(plugins.connect.reload());
   return stream;
 });
 
 gulp.task('minify-templates', function () {
   var stream = gulp.src('scripts/**/*.html')
-    .pipe(minifyHtml())
+    .pipe(plugins.minifyHtml())
     .pipe(gulp.dest('public/assets/js/'))    
   return stream;  
 });
@@ -79,13 +44,13 @@ gulp.task('copy-json', function() {
 
 gulp.task('compile-sass', function () {
   var stream = gulp.src('styles/**/*.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(autoprefixer()) 
-    .pipe(minifyCSS({ noAdvanced: true }))    
-    .pipe(sourcemaps.write())    
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.sass().on('error', plugins.sass.logError))
+    .pipe(plugins.autoprefixer()) 
+    .pipe(plugins.minifyCss({ noAdvanced: true }))    
+    .pipe(plugins.sourcemaps.write())
     .pipe(gulp.dest('public/assets/css/'))
-    .pipe(connect.reload());
+    .pipe(plugins.connect.reload());
   return stream;  
 });
 
@@ -99,7 +64,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('connect', function() { 
-  connect.server({
+  plugins.connect.server({
     root: './public/', 
     port: 8000, 
     livereload: true 
@@ -109,11 +74,29 @@ gulp.task('connect', function() {
 gulp.task('develop', ['minify-js', 'compile-sass', 'watch', 'connect'], function() {
   //Now open in browser 
   var stream = gulp.src("") 
-  .pipe(openPage({ 
+  .pipe(plugins.open({ 
     app: "google chrome", 
     uri: "http://localhost:8000"
   })); 
   return stream; 
+});
+
+/**
+ * 
+ * QA related tasks
+ * 
+ */
+
+gulp.task('jslint', function () {
+    gulp.src('scripts/**/*.js')
+    .pipe(plugins.jshint())
+    .pipe(plugins.jshint.reporter());
+});
+
+gulp.task('jscs', function() {
+    return gulp.src('scripts/**/*.js')
+        .pipe(plugins.jscs())
+        .pipe(plugins.jscs.reporter());
 });
 
 gulp.task('unit-testing', function (done) {
@@ -121,3 +104,37 @@ gulp.task('unit-testing', function (done) {
     configFile: __dirname + '/karma.conf.js'
   }, done).start();
 });
+
+gulp.task('webdriver_update', plugins.protractor.webdriver_update);
+
+gulp.task('protractor', ['webdriver_update'],function () {
+    gulp.src(["example_spec.js"])
+    .pipe(plugins.protractor.protractor({
+        configFile: "protractor.conf.js"
+    }))
+    .on('error', function(e) { throw e })
+});
+
+/**
+ * 
+ * Default task
+ * 
+ */
+
+gulp.task('default', function() {
+  console.log('this is for .. ' + env);
+});
+
+/**
+ * 
+ * Auxiliary functions
+ * 
+ */
+
+function getVersion() {
+    return fs.readFileSync('Version');
+};
+ 
+function getCopyrightVersion() {
+    return fs.readFileSync('Copyright');
+};
